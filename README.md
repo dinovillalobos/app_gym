@@ -30,7 +30,7 @@ Aplicación móvil para rutinas de ejercicio personalizadas que puedes realizar 
 
 1. Clonar el repositorio:
    ```bash
-   https://github.com/dinovillalobos/app_gym.git
+   git clone https://github.com/dinovillalobos/app_gym.git
    cd app_gym
    flutter pub get
 
