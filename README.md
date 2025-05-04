@@ -35,33 +35,35 @@ Aplicación móvil para rutinas de ejercicio personalizadas que puedes realizar 
    flutter pub get
 
 ### 📁 Estructura recomendada
+   ```bash
    lib/
-   ├── main.dart
-   ├── core/                   # Funciones comunes (helpers, constantes, estilos, etc.)
-   │   ├── constants.dart
-   │   ├── firebase_service.dart  # Funciones generales de Firestore
-   │   └── utils.dart
-   ├── models/                # Modelos de datos
-   │   ├── rutina_model.dart
-   │   ├── ejercicio_model.dart
-   │   ├── usuario_model.dart
-   │   └── progreso_model.dart
-   ├── services/              # Abstracción de Firebase por módulo
-   │   ├── rutina_service.dart
-   │   ├── ejercicio_service.dart
-   │   └── auth_service.dart
-   ├── screens/               # Pantallas principales
-   │   ├── home_screen.dart
-   │   ├── login_screen.dart
-   │   ├── rutina_detail_screen.dart
-   │   ├── crear_rutina_screen.dart
-   │   └── registro_screen.dart
-   ├── widgets/               # Widgets reutilizables
-   │   ├── rutina_card.dart
-   │   ├── ejercicio_tile.dart
-   │   └── loading_indicator.dart
-   └── providers/             # State Management (opcional)
-   ├── auth_provider.dart
-   └── rutina_provider.dart
+      ├── main.dart
+      ├── core/                   # Funciones comunes (helpers, constantes, estilos, etc.)
+      │   ├── constants.dart
+      │   ├── firebase_service.dart  # Funciones generales de Firestore
+      │   └── utils.dart
+      ├── models/                # Modelos de datos
+      │   ├── rutina_model.dart
+      │   ├── ejercicio_model.dart
+      │   ├── usuario_model.dart
+      │   └── progreso_model.dart
+      ├── services/              # Abstracción de Firebase por módulo
+      │   ├── rutina_service.dart
+      │   ├── ejercicio_service.dart
+      │   └── auth_service.dart
+      ├── screens/               # Pantallas principales
+      │   ├── home_screen.dart
+      │   ├── login_screen.dart
+      │   ├── rutina_detail_screen.dart
+      │   ├── crear_rutina_screen.dart
+      │   └── registro_screen.dart
+      ├── widgets/               # Widgets reutilizables
+      │   ├── rutina_card.dart
+      │   ├── ejercicio_tile.dart
+      │   └── loading_indicator.dart
+      └── providers/             # State Management (opcional)
+          ├── auth_provider.dart
+          └── rutina_provider.dart
+
 
 
