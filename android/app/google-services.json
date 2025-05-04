@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "828312872083",
+    "project_id": "gymhibrido-9d221",
+    "storage_bucket": "gymhibrido-9d221.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828312872083:android:d7bcd73c380faf8806d966",
+        "android_client_info": {
+          "package_name": "com.example.app_gym_hibrido"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6PrR9i316w4QUNrwdkSXMq6pv6H6NBL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
