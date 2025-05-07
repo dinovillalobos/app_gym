@@ -21,20 +21,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App Gym Híbrido',
-      theme: ThemeData(primarySwatch: Colors.blue),
-        home: StreamBuilder<User?>(
-        stream: AuthService().estadoUsuario,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasData) {
-          return const HomeScreen(); // Usuario logueado
-          }
-          return const LoginScreen(); // Usuario no logueado
-          },
+        title: 'App Gym Híbrido',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+         primarySwatch: Colors.deepPurple,
         ),
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+             );
+            } else if (snapshot.hasData) {
+              return const HomeScreen();
+            } else {
+              return const LoginScreen();
+          }
+        },
+        ),
+
+
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see

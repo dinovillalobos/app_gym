@@ -10,7 +10,7 @@ class UsuarioService {
   // Crear usuario nuevo en Firestore
   Future<void> crearUsuario(UsuarioModel usuario) async {
     try {
-      await _usuariosRef.doc(usuario.id).set(usuario.toJson());
+      await _usuariosRef.doc(usuario.uid).set(usuario.toJson());
     } catch (e) {
       throw Exception('Error al crear usuario: $e');
     }
@@ -33,7 +33,7 @@ class UsuarioService {
   // Actualizar datos del usuario
   Future<void> actualizarUsuario(UsuarioModel usuario) async {
     try {
-      await _usuariosRef.doc(usuario.id).update(usuario.toJson());
+      await _usuariosRef.doc(usuario.uid).update(usuario.toJson());
     } catch (e) {
       throw Exception('Error al actualizar usuario: $e');
     }
