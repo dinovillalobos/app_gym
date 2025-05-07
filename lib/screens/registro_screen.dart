@@ -12,6 +12,7 @@ class RegistroScreen extends StatefulWidget {
 class _RegistroScreenState extends State<RegistroScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController userController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,11 @@ class _RegistroScreenState extends State<RegistroScreen> {
               controller: passwordController,
               decoration: const InputDecoration(labelText: 'Contraseña'),
               obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: userController,
+              decoration: const InputDecoration(labelText: 'Nombre de usuario'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
