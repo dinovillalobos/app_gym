@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app_gym_hibrido/screens/login_screen.dart';
 import 'firebase_options.dart';
+import 'package:app_gym_hibrido/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +22,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'App Gym Híbrido',
-      //home: HomeScreen(),
-      theme: ThemeData(primarySwatch: Colors.indigo),
-      home: FirebaseAuth.instance.currentUser == null
-          ? const LoginScreen()
-          : HomeScreen(),
+      theme: ThemeData(primarySwatch: Colors.blue),
+        home: StreamBuilder<User?>(
+        stream: AuthService().estadoUsuario,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasData) {
+          return const HomeScreen(); // Usuario logueado
+          }
+          return const LoginScreen(); // Usuario no logueado
+          },
+        ),
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see

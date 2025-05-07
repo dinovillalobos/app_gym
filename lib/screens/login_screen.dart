@@ -15,30 +15,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  String _errorMessage = '';
 
-  Future<void> _login() async {
+  Future<void> _iniciarSesion() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
 
     try {
-      final auth = FirebaseAuth.instance;
-      await auth.signInWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
+      // Redirige a la pantalla principal si inicia sesión correctamente
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      final error = e.message ?? 'Error desconocido';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      setState(() {
+        _errorMessage = e.message ?? 'Error desconocido';
+      });
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -51,38 +56,46 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Correo'),
+                decoration: const InputDecoration(labelText: 'Correo electrónico'),
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) =>
-                value!.isEmpty ? 'Ingresa un correo válido' : null,
+                value!.isEmpty ? 'Ingresa tu correo' : null,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
                 decoration: const InputDecoration(labelText: 'Contraseña'),
+                obscureText: true,
                 validator: (value) =>
-                value!.length < 6 ? 'Mínimo 6 caracteres' : null,
+                value!.isEmpty ? 'Ingresa tu contraseña' : null,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+              if (_errorMessage.isNotEmpty)
+                Text(_errorMessage, style: const TextStyle(color: Colors.red)),
               _isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: _login,
+                onPressed: _iniciarSesion,
                 child: const Text('Iniciar sesión'),
               ),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const RegistroScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const RegistroScreen()),
                   );
                 },
-                child: const Text('¿No tienes cuenta? Regístrate'),
+                child: const Text(
+                  '¿No tienes cuenta? Regístrate',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
-
             ],
           ),
         ),
