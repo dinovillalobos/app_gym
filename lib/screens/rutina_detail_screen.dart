@@ -1,81 +1,150 @@
 import 'package:flutter/material.dart';
 import '../models/rutina_model.dart';
-import 'agregar_ejercicio_screen.dart.';
-
+import '../widgets/modal_agregar_serie.dart';
+import 'agregar_ejercicio_screen.dart';
 class DetalleRutinaScreen extends StatefulWidget {
   final RutinaModel rutina;
-  final String userId;
 
-  const DetalleRutinaScreen({
-    Key? key,
-    required this.rutina,
-    required this.userId,
-  }) : super(key: key);
+  const DetalleRutinaScreen({Key? key, required this.rutina}) : super(key: key);
 
   @override
   State<DetalleRutinaScreen> createState() => _DetalleRutinaScreenState();
 }
 
 class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
-  List<Map<String, dynamic>> ejerciciosAgregados = [];
+  List<Map<String, dynamic>> ejercicios = [];
 
   void _agregarEjercicios() async {
-    final seleccionados = await Navigator.push(
+    final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const AgregarEjerciciosScreen(rutinaId: '',),
+        builder: (_) => const AgregarEjerciciosScreen(rutinaId: ''),
       ),
     );
 
-    if (seleccionados != null && seleccionados is List<Map<String, dynamic>>) {
+    if (resultado != null && resultado is List<Map<String, dynamic>>) {
       setState(() {
-        ejerciciosAgregados = seleccionados;
+        for (var e in resultado) {
+          if (!ejercicios.any((ex) => ex['nombre'] == e['nombre'])) {
+            ejercicios.add({...e, 'series': []});
+          }
+        }
       });
     }
+  }
+
+  void _agregarSerie(int indexEjercicio) async {
+    final nuevaSerie = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const ModalAgregarSerie(),
+    );
+
+    if (nuevaSerie != null) {
+      setState(() {
+        ejercicios[indexEjercicio]['series'].add(nuevaSerie);
+      });
+    }
+  }
+
+  void _editarSerie(int indexEjercicio, int indexSerie) async {
+    final serie = ejercicios[indexEjercicio]['series'][indexSerie];
+
+    final resultado = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => ModalAgregarSerie(
+        tipoInicial: serie['tipo'],
+        kgInicial: serie['kg'].toString(),
+        repsInicial: serie['reps'].toString(),
+      ),
+    );
+
+    if (resultado != null) {
+      setState(() {
+        ejercicios[indexEjercicio]['series'][indexSerie] = resultado;
+      });
+    }
+  }
+
+  void _eliminarSerie(int indexEjercicio, int indexSerie) {
+    setState(() {
+      ejercicios[indexEjercicio]['series'].removeAt(indexSerie);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.rutina.nombre)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Descripción: ${widget.rutina.descripcion}', style: TextStyle(fontSize: 16)),
-            Text('Nivel: ${widget.rutina.nivel}', style: TextStyle(fontSize: 16)),
-            Text('Tipo: ${widget.rutina.tipo}', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            const Text('Ejercicios agregados:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            if (ejerciciosAgregados.isEmpty)
-              const Text('No has agregado ejercicios aún.')
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: ejerciciosAgregados.length,
-                  itemBuilder: (context, index) {
-                    final ejercicio = ejerciciosAgregados[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(ejercicio['nombre']),
-                        subtitle: Text(
-                          'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}\n'
-                              'Secundarios: ${List<String>.from(ejercicio['musculosSecundarios']).join(', ')}',
-                        ),
+      appBar: AppBar(
+        title: Text(widget.rutina.nombre),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _agregarEjercicios,
+            tooltip: 'Agregar ejercicios',
+          ),
+        ],
+      ),
+      body: ejercicios.isEmpty
+          ? const Center(child: Text('No hay ejercicios aún.'))
+          : ListView.builder(
+        itemCount: ejercicios.length,
+        itemBuilder: (context, indexEjercicio) {
+          final ejercicio = ejercicios[indexEjercicio];
+
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    ejercicio['nombre'],
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  Text(
+                    'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  ...ejercicio['series'].asMap().entries.map((entry) {
+                    final serie = entry.value;
+                    final indexSerie = entry.key;
+
+                    return ListTile(
+                      title: Text('${serie['kg']} kg x ${serie['reps']} reps'),
+                      subtitle: Text('Tipo: ${serie['tipo']}'),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (opcion) {
+                          if (opcion == 'editar') {
+                            _editarSerie(indexEjercicio, indexSerie);
+                          } else if (opcion == 'eliminar') {
+                            _eliminarSerie(indexEjercicio, indexSerie);
+                          }
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(value: 'editar', child: Text('Editar serie')),
+                          PopupMenuItem(value: 'eliminar', child: Text('Eliminar serie')),
+                        ],
                       ),
                     );
-                  },
-                ),
+                  }).toList(),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => _agregarSerie(indexEjercicio),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Agregar serie'),
+                    ),
+                  ),
+                ],
               ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _agregarEjercicios,
-        icon: const Icon(Icons.add),
-        label: const Text('Agregar ejercicios'),
+            ),
+          );
+        },
       ),
     );
   }

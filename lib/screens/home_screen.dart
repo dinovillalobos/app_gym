@@ -85,8 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (_) => DetalleRutinaScreen(
                       rutina: rutina,
-                      userId:
-                      FirebaseAuth.instance.currentUser!.uid,
                     ),
                   ),
                 );
@@ -113,4 +111,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
