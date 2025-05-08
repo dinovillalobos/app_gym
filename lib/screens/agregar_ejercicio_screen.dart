@@ -1,97 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:app_gym_hibrido/models/ejercicio_model.dart';
-import 'package:app_gym_hibrido/services/ejercicio_service.dart';
+import '../data/ejercicios_mock.dart';
 
-class AgregarEjercicioScreen extends StatefulWidget {
-  final String userId;
-  final String rutinaId;
-
-  const AgregarEjercicioScreen({
-    super.key,
-    required this.userId,
-    required this.rutinaId,
-  });
+class AgregarEjerciciosScreen extends StatefulWidget {
+  const AgregarEjerciciosScreen({Key? key}) : super(key: key);
 
   @override
-  State<AgregarEjercicioScreen> createState() => _AgregarEjercicioScreenState();
+  State<AgregarEjerciciosScreen> createState() => _AgregarEjerciciosScreenState();
 }
 
-class _AgregarEjercicioScreenState extends State<AgregarEjercicioScreen> {
-  final nombreController = TextEditingController();
-  final musculoController = TextEditingController();
-  final seriesController = TextEditingController();
-  final repeticionesController = TextEditingController();
-  final tipoController = TextEditingController();
-  final notasController = TextEditingController();
+class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
+  final List<Map<String, dynamic>> seleccionados = [];
 
-  late EjercicioService ejercicioService;
-
-  @override
-  void initState() {
-    super.initState();
-    ejercicioService = EjercicioService(
-      userId: widget.userId,
-      rutinaId: widget.rutinaId,
-    );
+  void _guardarSeleccion() {
+    Navigator.pop(context, seleccionados);
   }
 
-  Future<void> guardarEjercicio() async {
-    final ejercicio = EjercicioModel(
-      id: '', // Firestore asignará el ID
-      nombre: nombreController.text.trim(),
-      musculo: musculoController.text.trim(),
-      series: int.tryParse(seriesController.text) ?? 0,
-      repeticiones: int.tryParse(repeticionesController.text) ?? 0,
-      tipo: tipoController.text.trim(),
-      notas: notasController.text.trim(),
-    );
-
-    await ejercicioService.agregarEjercicio(ejercicio);
-    Navigator.pop(context); // Volver a la pantalla anterior
+  bool estaSeleccionado(Map<String, dynamic> ejercicio) {
+    return seleccionados.any((e) => e['nombre'] == ejercicio['nombre']);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Agregar Ejercicio')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            TextField(
-              controller: nombreController,
-              decoration: const InputDecoration(labelText: 'Nombre del ejercicio'),
+      appBar: AppBar(title: const Text('Selecciona ejercicios')),
+      body: ListView.builder(
+        itemCount: ejerciciosMock.length,
+        itemBuilder: (context, index) {
+          final ejercicio = ejerciciosMock[index];
+          final seleccionado = estaSeleccionado(ejercicio);
+
+          return ListTile(
+            title: Text(ejercicio['nombre']),
+            subtitle: Text(
+              'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}'
+                  '\nSecundarios: ${List<String>.from(ejercicio['musculosSecundarios']).join(', ')}',
             ),
-            TextField(
-              controller: musculoController,
-              decoration: const InputDecoration(labelText: 'Músculo trabajado'),
+            trailing: Checkbox(
+              value: seleccionado,
+              onChanged: (valor) {
+                setState(() {
+                  if (valor == true && !seleccionado) {
+                    seleccionados.add(ejercicio);
+                  } else {
+                    seleccionados.removeWhere((e) => e['nombre'] == ejercicio['nombre']);
+                  }
+                });
+              },
             ),
-            TextField(
-              controller: tipoController,
-              decoration: const InputDecoration(labelText: 'Tipo de ejercicio'),
-            ),
-            TextField(
-              controller: seriesController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Series'),
-            ),
-            TextField(
-              controller: repeticionesController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Repeticiones'),
-            ),
-            TextField(
-              controller: notasController,
-              decoration: const InputDecoration(labelText: 'Notas (opcional)'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: guardarEjercicio,
-              child: const Text('Guardar Ejercicio'),
-            ),
-          ],
-        ),
+            isThreeLine: true,
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _guardarSeleccion,
+        icon: const Icon(Icons.save),
+        label: const Text('Guardar'),
       ),
     );
   }
 }
+
+

@@ -1,11 +1,11 @@
 import 'package:app_gym_hibrido/models/rutina_model.dart';
 import 'package:app_gym_hibrido/models/usuario_model.dart';
+import 'package:app_gym_hibrido/screens/crear_rutina_screen.dart';
+import 'package:app_gym_hibrido/screens/rutina_detail_screen.dart';
 import 'package:app_gym_hibrido/services/rutina_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'crear_rutina_screen.dart';
-import 'rutina_detail_screen.dart'; // Asegúrate de tener esta pantalla creada
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (userDoc.exists && userDoc.data() != null) {
         final usuario = UsuarioModel.fromJson(userDoc.data()!, userId);
-
         final rutinasData = await rutinaService.obtenerRutinas();
 
         setState(() {
@@ -79,18 +78,21 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListTile(
               title: Text(rutina.nombre),
               subtitle: Text(rutina.descripcion),
-              onTap: () {
-                final userId =
-                    FirebaseAuth.instance.currentUser!.uid;
-                Navigator.push(
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => RutinaDetalleScreen(
-                      userId: userId,
-                      rutinaId: rutina.id,
+                    builder: (_) => DetalleRutinaScreen(
+                      rutina: rutina,
+                      userId:
+                      FirebaseAuth.instance.currentUser!.uid,
                     ),
                   ),
                 );
+                // Refrescar después de volver de detalles
+                cargarDatosIniciales(
+                    FirebaseAuth.instance.currentUser!.uid);
               },
             ),
           );
@@ -111,3 +113,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

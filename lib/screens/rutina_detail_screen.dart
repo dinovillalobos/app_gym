@@ -1,35 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:app_gym_hibrido/screens/agregar_ejercicio_screen.dart';
-
-class RutinaDetalleScreen extends StatelessWidget {
-  final String userId;
+import 'agregar_ejercicio_screen.dart';
+class DetalleRutinaScreen extends StatefulWidget {
   final String rutinaId;
+  final String nombreRutina;
 
-  const RutinaDetalleScreen({
-    super.key,
-    required this.userId,
+  const DetalleRutinaScreen({
+    Key? key,
     required this.rutinaId,
-  });
+    required this.nombreRutina,
+  }) : super(key: key);
+
+  @override
+  State<DetalleRutinaScreen> createState() => _DetalleRutinaScreenState();
+}
+
+class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
+  List<String> ejercicios = [];
+
+  void _agregarEjercicios() async {
+    final ejerciciosSeleccionados = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AgregarEjerciciosScreen(),
+      ),
+    );
+
+    if (ejerciciosSeleccionados != null) {
+      setState(() {
+        ejercicios.addAll(ejerciciosSeleccionados);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de Rutina')),
-      body: Center(
-        child: Text('Aquí se mostrarán los ejercicios de la rutina'),
+      appBar: AppBar(title: Text(widget.nombreRutina)),
+      body: ejercicios.isEmpty
+          ? const Center(child: Text('No hay ejercicios agregados'))
+          : ListView.builder(
+        itemCount: ejercicios.length,
+        itemBuilder: (context, index) => ListTile(
+          title: Text(ejercicios[index]),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AgregarEjercicioScreen(
-                userId: userId,
-                rutinaId: rutinaId,
-              ),
-            ),
-          );
-        },
+        onPressed: _agregarEjercicios,
         child: const Icon(Icons.add),
       ),
     );
