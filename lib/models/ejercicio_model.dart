@@ -1,62 +1,43 @@
-class Serie {
-  String tipo; // calentamiento, normal, etc.
-  int repeticiones;
-  double peso;
-  int rpe;
-
-  Serie({
-    required this.tipo,
-    required this.repeticiones,
-    required this.peso,
-    required this.rpe,
-  });
-
-  factory Serie.fromJson(Map<String, dynamic> json) {
-    return Serie(
-      tipo: json['tipo'],
-      repeticiones: json['repeticiones'],
-      peso: (json['peso'] ?? 0).toDouble(),
-      rpe: json['rpe'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'tipo': tipo,
-    'repeticiones': repeticiones,
-    'peso': peso,
-    'rpe': rpe,
-  };
-}
-
-class EjercicioEnRutina {
+class EjercicioModel {
   String id;
-  String ejercicioRef;
-  int orden;
-  List<Serie> series;
+  String nombre;
+  String musculo;
+  int series;
+  int repeticiones;
+  String tipo;
+  String? notas;
 
-  EjercicioEnRutina({
+  EjercicioModel({
     required this.id,
-    required this.ejercicioRef,
-    required this.orden,
+    required this.nombre,
+    required this.musculo,
     required this.series,
+    required this.repeticiones,
+    required this.tipo,
+    this.notas,
   });
 
-  factory EjercicioEnRutina.fromJson(Map<String, dynamic> json, String id) {
-    var seriesList = (json['series'] as List)
-        .map((e) => Serie.fromJson(e))
-        .toList();
-
-    return EjercicioEnRutina(
+  factory EjercicioModel.fromJson(Map<String, dynamic> json, String id) {
+    return EjercicioModel(
       id: id,
-      ejercicioRef: json['ejercicioRef'],
-      orden: json['orden'],
-      series: seriesList,
+      nombre: json['nombre'],
+      musculo: json['musculo'],
+      series: json['series'],
+      repeticiones: json['repeticiones'],
+      tipo: json['tipo'],
+      notas: json['notas'],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'ejercicioRef': ejercicioRef,
-    'orden': orden,
-    'series': series.map((e) => e.toJson()).toList(),
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'nombre': nombre,
+      'musculo': musculo,
+      'series': series,
+      'repeticiones': repeticiones,
+      'tipo': tipo,
+      'notas': notas,
+    };
+  }
 }
+

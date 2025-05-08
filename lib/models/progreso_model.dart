@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app_gym_hibrido/models/ejercicio_model.dart';
 
-class EjercicioCompletado {
+/*class EjercicioCompletado {
   String ejercicioRef;
   List<Serie> series;
 
@@ -60,3 +60,4 @@ class ProgresoModel {
     ejerciciosCompletados.map((e) => e.toJson()).toList(),
   };
 }
+*/
