@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import '../data/ejercicios_mock.dart';
 
 class AgregarEjerciciosScreen extends StatefulWidget {
-  const AgregarEjerciciosScreen({Key? key}) : super(key: key);
+  final String rutinaId; // ✅ Nuevo parámetro obligatorio
+
+  const AgregarEjerciciosScreen({
+    Key? key,
+    required this.rutinaId,
+  }) : super(key: key);
 
   @override
   State<AgregarEjerciciosScreen> createState() => _AgregarEjerciciosScreenState();
@@ -22,7 +27,17 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Selecciona ejercicios')),
+      appBar: AppBar(
+        title: const Text('Selecciona ejercicios'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: Text('Rutina ID: ${widget.rutinaId}', style: const TextStyle(fontSize: 12)),
+            ),
+          ),
+        ],
+      ),
       body: ListView.builder(
         itemCount: ejerciciosMock.length,
         itemBuilder: (context, index) {
