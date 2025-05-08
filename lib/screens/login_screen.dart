@@ -1,3 +1,4 @@
+import 'package:app_gym_hibrido/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
@@ -33,7 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => navigationBar(userId: credential.user!.uid),
+        ),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
