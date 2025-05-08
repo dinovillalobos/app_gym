@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'crear_rutina_screen.dart';
+import 'rutina_detail_screen.dart'; // Asegúrate de tener esta pantalla creada
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -78,6 +79,19 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListTile(
               title: Text(rutina.nombre),
               subtitle: Text(rutina.descripcion),
+              onTap: () {
+                final userId =
+                    FirebaseAuth.instance.currentUser!.uid;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RutinaDetalleScreen(
+                      userId: userId,
+                      rutinaId: rutina.id,
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
