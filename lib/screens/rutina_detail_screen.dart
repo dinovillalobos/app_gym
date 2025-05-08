@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/rutina_model.dart';
 import '../widgets/modal_agregar_serie.dart';
 import 'agregar_ejercicio_screen.dart';
+
 class DetalleRutinaScreen extends StatefulWidget {
   final RutinaModel rutina;
 
@@ -33,44 +34,56 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
     }
   }
 
-  void _agregarSerie(int indexEjercicio) async {
-    final nuevaSerie = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => const ModalAgregarSerie(),
-    );
-
-    if (nuevaSerie != null) {
-      setState(() {
-        ejercicios[indexEjercicio]['series'].add(nuevaSerie);
-      });
-    }
-  }
-
-  void _editarSerie(int indexEjercicio, int indexSerie) async {
-    final serie = ejercicios[indexEjercicio]['series'][indexSerie];
-
-    final resultado = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => ModalAgregarSerie(
-        tipoInicial: serie['tipo'],
-        kgInicial: serie['kg'].toString(),
-        repsInicial: serie['reps'].toString(),
-      ),
-    );
-
-    if (resultado != null) {
-      setState(() {
-        ejercicios[indexEjercicio]['series'][indexSerie] = resultado;
-      });
-    }
-  }
-
-  void _eliminarSerie(int indexEjercicio, int indexSerie) {
+  void _agregarSerie(int indexEjercicio) {
     setState(() {
-      ejercicios[indexEjercicio]['series'].removeAt(indexSerie);
+      ejercicios[indexEjercicio]['series'].add({
+        'tipo': '',
+        'kg': '',
+        'reps': '',
+      });
     });
+  }
+
+  void _editarCampo(int indexEjercicio, int indexSerie, String campo) async {
+    if (campo == 'tipo') {
+      final tipoElegido = await showModalBottomSheet<Map<String, dynamic>>(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => const ModalAgregarSerie(),
+      );
+
+      if (tipoElegido != null) {
+        setState(() {
+          ejercicios[indexEjercicio]['series'][indexSerie]['tipo'] = tipoElegido['tipo'];
+        });
+      }
+    } else {
+      final controlador = TextEditingController(
+        text: ejercicios[indexEjercicio]['series'][indexSerie][campo],
+      );
+
+      final nuevoValor = await showDialog<String>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Editar $campo'),
+          content: TextField(
+            controller: controlador,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: campo),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+            ElevatedButton(onPressed: () => Navigator.pop(context, controlador.text), child: const Text('Guardar')),
+          ],
+        ),
+      );
+
+      if (nuevoValor != null) {
+        setState(() {
+          ejercicios[indexEjercicio]['series'][indexSerie][campo] = nuevoValor;
+        });
+      }
+    }
   }
 
   @override
@@ -92,6 +105,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
         itemCount: ejercicios.length,
         itemBuilder: (context, indexEjercicio) {
           final ejercicio = ejercicios[indexEjercicio];
+          final series = ejercicio['series'] as List;
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -108,30 +122,34 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
                     'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
-                  const SizedBox(height: 8),
-                  ...ejercicio['series'].asMap().entries.map((entry) {
-                    final serie = entry.value;
-                    final indexSerie = entry.key;
-
-                    return ListTile(
-                      title: Text('${serie['kg']} kg x ${serie['reps']} reps'),
-                      subtitle: Text('Tipo: ${serie['tipo']}'),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (opcion) {
-                          if (opcion == 'editar') {
-                            _editarSerie(indexEjercicio, indexSerie);
-                          } else if (opcion == 'eliminar') {
-                            _eliminarSerie(indexEjercicio, indexSerie);
-                          }
-                        },
-                        itemBuilder: (context) => const [
-                          PopupMenuItem(value: 'editar', child: Text('Editar serie')),
-                          PopupMenuItem(value: 'eliminar', child: Text('Eliminar serie')),
+                  const SizedBox(height: 12),
+                  Table(
+                    border: TableBorder.all(color: Colors.grey),
+                    columnWidths: const {
+                      0: FixedColumnWidth(60),
+                      1: FlexColumnWidth(),
+                      2: FlexColumnWidth(),
+                    },
+                    children: [
+                      const TableRow(
+                        decoration: BoxDecoration(color: Colors.black12),
+                        children: [
+                          Padding(padding: EdgeInsets.all(8), child: Text('Serie', textAlign: TextAlign.center)),
+                          Padding(padding: EdgeInsets.all(8), child: Text('KG', textAlign: TextAlign.center)),
+                          Padding(padding: EdgeInsets.all(8), child: Text('Reps', textAlign: TextAlign.center)),
                         ],
                       ),
-                    );
-                  }).toList(),
-                  const SizedBox(height: 8),
+                      for (int i = 0; i < series.length; i++)
+                        TableRow(
+                          children: [
+                            _celdaEditable(indexEjercicio, i, 'tipo'),
+                            _celdaEditable(indexEjercicio, i, 'kg'),
+                            _celdaEditable(indexEjercicio, i, 'reps'),
+                          ],
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
@@ -145,6 +163,19 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _celdaEditable(int iEjercicio, int iSerie, String campo) {
+    final valor = ejercicios[iEjercicio]['series'][iSerie][campo];
+    return GestureDetector(
+      onTap: () => _editarCampo(iEjercicio, iSerie, campo),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Center(
+          child: Text(valor.isEmpty ? '-' : valor.toString()),
+        ),
       ),
     );
   }

@@ -1,85 +1,56 @@
 import 'package:flutter/material.dart';
 
-class ModalAgregarSerie extends StatefulWidget {
-  final String? tipoInicial;
-  final String? kgInicial;
-  final String? repsInicial;
+class ModalAgregarSerie extends StatelessWidget {
+  const ModalAgregarSerie({Key? key}) : super(key: key);
 
-  const ModalAgregarSerie({
-    super.key,
-    this.tipoInicial,
-    this.kgInicial,
-    this.repsInicial,
-  });
-
-  @override
-  State<ModalAgregarSerie> createState() => _ModalAgregarSerieState();
-}
-
-class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
-  String tipo = '1';
-  final TextEditingController kgController = TextEditingController();
-  final TextEditingController repsController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    tipo = widget.tipoInicial ?? '1';
-    kgController.text = widget.kgInicial ?? '';
-    repsController.text = widget.repsInicial ?? '';
-  }
+  final List<Map<String, String>> tiposSerie = const [
+    {'tipo': 'W', 'desc': 'Calentamiento'},
+    {'tipo': '1', 'desc': 'Serie normal'},
+    {'tipo': 'F', 'desc': 'Serie fallida'},
+    {'tipo': 'D', 'desc': 'Drop set'},
+    {'tipo': 'S', 'desc': 'Super serie'},
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('Selecciona el tipo de serie'),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: ['W', '1', 'F', 'D'].map((valor) {
-              return ChoiceChip(
-                label: Text(valor),
-                selected: tipo == valor,
-                onSelected: (_) {
-                  setState(() => tipo = valor);
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: kgController,
-            decoration: const InputDecoration(labelText: 'Kg'),
-            keyboardType: TextInputType.number,
-          ),
-          TextField(
-            controller: repsController,
-            decoration: const InputDecoration(labelText: 'Reps'),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () {
-              if (kgController.text.isNotEmpty && repsController.text.isNotEmpty) {
-                Navigator.pop(context, {
-                  'tipo': tipo,
-                  'kg': double.tryParse(kgController.text) ?? 0,
-                  'reps': int.tryParse(repsController.text) ?? 0,
-                });
-              }
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: tiposSerie.map((tipo) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.pop(context, {
+                'tipo': tipo['tipo'],
+                'kg': '',
+                'reps': '',
+              });
             },
-            child: const Text('Agregar'),
-          )
-        ],
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.blueAccent),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    tipo['tipo']!,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    tipo['desc']!,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

@@ -1,30 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class RutinaModel {
-  String id;
-  String nombre;
-  String descripcion;
-  String nivel;
-  String tipo;
-  DateTime fechaCreacion;
+  final String id;
+  final String nombre;
+  final String descripcion;
+  final List<Map<String, dynamic>> ejercicios;
 
   RutinaModel({
     required this.id,
     required this.nombre,
     required this.descripcion,
-    required this.nivel,
-    required this.tipo,
-    required this.fechaCreacion,
+    required this.ejercicios,
   });
 
   factory RutinaModel.fromJson(Map<String, dynamic> json, String id) {
     return RutinaModel(
       id: id,
-      nombre: json['nombre'] ?? '',
-      descripcion: json['descripcion'] ?? '',
-      nivel: json['nivel'] ?? '',
-      tipo: json['tipo'] ?? '',
-      fechaCreacion: (json['fecha_creacion'] as Timestamp).toDate(),
+      nombre: json['nombre'],
+      descripcion: json['descripcion'],
+      ejercicios: List<Map<String, dynamic>>.from(json['ejercicios'] ?? []),
     );
   }
 
@@ -32,9 +24,8 @@ class RutinaModel {
     return {
       'nombre': nombre,
       'descripcion': descripcion,
-      'nivel': nivel,
-      'tipo': tipo,
-      'fecha_creacion': fechaCreacion,
+      'ejercicios': ejercicios,
     };
   }
 }
+
