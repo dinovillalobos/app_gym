@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/rutina_model.dart';
 import '../services/rutina_service.dart';
 import 'agregar_ejercicio_screen.dart';
-
+import 'home_screen.dart';
 class CrearRutinaScreen extends StatefulWidget {
   const CrearRutinaScreen({Key? key}) : super(key: key);
 
@@ -67,7 +67,12 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
 
     try {
       await rutinaService.crearRutina(rutina);
-      Navigator.pop(context);
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al guardar rutina: $e')),

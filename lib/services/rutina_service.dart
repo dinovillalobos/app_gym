@@ -13,11 +13,17 @@ class RutinaService {
   Future<void> crearRutina(RutinaModel rutina) async {
     try {
       print('Guardando rutina para UID: $userId');
-      print('Datos de rutina: ${rutina.toJson()}');
+      print('Datos de rutina antes de guardar: ${rutina.toJson()}');
 
-      await _rutinasRef.doc(rutina.id).set(rutina.toJson());
+      // Generar nuevo ID
+      final newDocRef = _rutinasRef.doc(); // genera un ID automáticamente
+      final rutinaConId = rutina.copyWith(id: newDocRef.id);
 
-      print('✅ Rutina guardada exitosamente.');
+      // Guardar rutina con ID asignado
+      await newDocRef.set(rutinaConId.toJson());
+
+      print('✅ Rutina guardada exitosamente con ID: ${newDocRef.id}');
+
     } catch (e) {
       print('❌ Error al guardar rutina: $e');
       throw Exception('Error al guardar rutina: $e');

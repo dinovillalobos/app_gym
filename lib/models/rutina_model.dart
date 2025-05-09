@@ -48,11 +48,24 @@ class RutinaModel {
               'kg': s['kg'] ?? '',
               'reps': s['reps'] ?? '',
             };
-          }).toList() ??
-              [],
+          }).toList() ?? [],
         };
-      }).toList() ??
-          [],
+      }).toList() ?? [],
+    );
+  }
+
+  // ✅ Método copyWith para crear una copia con cambios
+  RutinaModel copyWith({
+    String? id,
+    String? nombre,
+    String? descripcion,
+    List<Map<String, dynamic>>? ejercicios,
+  }) {
+    return RutinaModel(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      descripcion: descripcion ?? this.descripcion,
+      ejercicios: ejercicios ?? this.ejercicios,
     );
   }
 }
