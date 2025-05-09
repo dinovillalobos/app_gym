@@ -34,56 +34,45 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
     }
   }
 
-  void _agregarSerie(int indexEjercicio) {
-    setState(() {
-      ejercicios[indexEjercicio]['series'].add({
-        'tipo': '',
-        'kg': '',
-        'reps': '',
+  void _agregarSerie(int indexEjercicio) async {
+    final nuevaSerie = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const ModalAgregarSerie(),
+    );
+
+    if (nuevaSerie != null) {
+      setState(() {
+        ejercicios[indexEjercicio]['series'].add(nuevaSerie);
       });
-    });
+    }
   }
 
-  void _editarCampo(int indexEjercicio, int indexSerie, String campo) async {
-    if (campo == 'tipo') {
-      final tipoElegido = await showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) => const ModalAgregarSerie(),
-      );
+  void _editarSerie(int indexEjercicio, int indexSerie) async {
+    final serie = ejercicios[indexEjercicio]['series'][indexSerie];
 
-      if (tipoElegido != null) {
-        setState(() {
-          ejercicios[indexEjercicio]['series'][indexSerie]['tipo'] = tipoElegido['tipo'];
-        });
-      }
-    } else {
-      final controlador = TextEditingController(
-        text: ejercicios[indexEjercicio]['series'][indexSerie][campo],
-      );
+    final resultado = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => ModalAgregarSerie(
+        tipoInicial: (serie.containsKey('tipo') && serie['tipo'] != null) ? serie['tipo'] : '',
+        kgInicial: (serie.containsKey('kg') && serie['kg'] != null) ? serie['kg'].toString() : '',
+        repsInicial: (serie.containsKey('reps') && serie['reps'] != null) ? serie['reps'].toString() : '',
 
-      final nuevoValor = await showDialog<String>(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Editar $campo'),
-          content: TextField(
-            controller: controlador,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: campo),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-            ElevatedButton(onPressed: () => Navigator.pop(context, controlador.text), child: const Text('Guardar')),
-          ],
-        ),
-      );
+      ),
+    );
 
-      if (nuevoValor != null) {
-        setState(() {
-          ejercicios[indexEjercicio]['series'][indexSerie][campo] = nuevoValor;
-        });
-      }
+    if (resultado != null) {
+      setState(() {
+        ejercicios[indexEjercicio]['series'][indexSerie] = resultado;
+      });
     }
+  }
+
+  void _eliminarSerie(int indexEjercicio, int indexSerie) {
+    setState(() {
+      ejercicios[indexEjercicio]['series'].removeAt(indexSerie);
+    });
   }
 
   @override
@@ -105,7 +94,6 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
         itemCount: ejercicios.length,
         itemBuilder: (context, indexEjercicio) {
           final ejercicio = ejercicios[indexEjercicio];
-          final series = ejercicio['series'] as List;
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -122,34 +110,30 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
                     'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
-                  const SizedBox(height: 12),
-                  Table(
-                    border: TableBorder.all(color: Colors.grey),
-                    columnWidths: const {
-                      0: FixedColumnWidth(60),
-                      1: FlexColumnWidth(),
-                      2: FlexColumnWidth(),
-                    },
-                    children: [
-                      const TableRow(
-                        decoration: BoxDecoration(color: Colors.black12),
-                        children: [
-                          Padding(padding: EdgeInsets.all(8), child: Text('Serie', textAlign: TextAlign.center)),
-                          Padding(padding: EdgeInsets.all(8), child: Text('KG', textAlign: TextAlign.center)),
-                          Padding(padding: EdgeInsets.all(8), child: Text('Reps', textAlign: TextAlign.center)),
+                  const SizedBox(height: 8),
+                  ...ejercicio['series'].asMap().entries.map((entry) {
+                    final serie = entry.value;
+                    final indexSerie = entry.key;
+
+                    return ListTile(
+                      title: Text('${serie['kg']} kg x ${serie['reps']} reps'),
+                      subtitle: Text('Tipo: ${serie['tipo']}'),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (opcion) {
+                          if (opcion == 'editar') {
+                            _editarSerie(indexEjercicio, indexSerie);
+                          } else if (opcion == 'eliminar') {
+                            _eliminarSerie(indexEjercicio, indexSerie);
+                          }
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(value: 'editar', child: Text('Editar serie')),
+                          PopupMenuItem(value: 'eliminar', child: Text('Eliminar serie')),
                         ],
                       ),
-                      for (int i = 0; i < series.length; i++)
-                        TableRow(
-                          children: [
-                            _celdaEditable(indexEjercicio, i, 'tipo'),
-                            _celdaEditable(indexEjercicio, i, 'kg'),
-                            _celdaEditable(indexEjercicio, i, 'reps'),
-                          ],
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
+                    );
+                  }).toList(),
+                  const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
@@ -166,17 +150,5 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
       ),
     );
   }
-
-  Widget _celdaEditable(int iEjercicio, int iSerie, String campo) {
-    final valor = ejercicios[iEjercicio]['series'][iSerie][campo];
-    return GestureDetector(
-      onTap: () => _editarCampo(iEjercicio, iSerie, campo),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Center(
-          child: Text(valor.isEmpty ? '-' : valor.toString()),
-        ),
-      ),
-    );
-  }
 }
+
