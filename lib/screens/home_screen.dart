@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required String title}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -52,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -106,12 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => DetalleRutinaScreen(
-                      rutina: rutina,
-                    ),
+                    builder: (_) => DetalleRutinaScreen(rutina: rutina),
                   ),
                 );
-                cargarDatosIniciales(FirebaseAuth.instance.currentUser!.uid);
+                cargarDatosIniciales(userId);
               },
             ),
           );
@@ -120,11 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: () {
-          final userId = FirebaseAuth.instance.currentUser!.uid;
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => CrearRutinaScreen(userId: userId, title: ''),
+              builder: (_) => CrearRutinaScreen(),
             ),
           ).then((_) => cargarDatosIniciales(userId));
         },
@@ -133,4 +132,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

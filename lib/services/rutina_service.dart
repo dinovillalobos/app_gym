@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:app_gym_hibrido/models/rutina_model.dart';
+import '../models/rutina_model.dart';
 
 class RutinaService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -12,9 +12,15 @@ class RutinaService {
 
   Future<void> crearRutina(RutinaModel rutina) async {
     try {
-      await _rutinasRef.add(rutina.toJson());
+      print('Guardando rutina para UID: $userId');
+      print('Datos de rutina: ${rutina.toJson()}');
+
+      await _rutinasRef.doc(rutina.id).set(rutina.toJson());
+
+      print('✅ Rutina guardada exitosamente.');
     } catch (e) {
-      throw Exception('Error al crear rutina: $e');
+      print('❌ Error al guardar rutina: $e');
+      throw Exception('Error al guardar rutina: $e');
     }
   }
 

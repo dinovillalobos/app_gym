@@ -4,8 +4,7 @@ import 'package:app_gym_hibrido/screens/crear_rutina_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class navigationBar extends StatefulWidget {
-  final String userId;
-  const navigationBar({super.key, required this.userId});
+  const navigationBar({super.key});
 
   @override
   State<navigationBar> createState() => _navigationBarState();
@@ -21,16 +20,13 @@ class _navigationBarState extends State<navigationBar> {
 
       switch (_screenAct) {
         case 0:
-          _cuerpo = HomeScreen(title: "Inicio");
+          _cuerpo = const HomeScreen();
           break;
         case 1:
-          _cuerpo = CrearRutinaScreen(
-            title: "Rutinas",
-            userId: widget.userId,
-          );
+          _cuerpo = const CrearRutinaScreen();
           break;
         default:
-          _cuerpo = HomeScreen(title: "Inicio");
+          _cuerpo = const HomeScreen();
       }
     });
   }
@@ -38,20 +34,16 @@ class _navigationBarState extends State<navigationBar> {
   @override
   void initState() {
     super.initState();
-    _cuerpo = HomeScreen(title: "Inicio");
+    _cuerpo = const HomeScreen();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900], // Color de fondo general
+      backgroundColor: Colors.grey[900],
       body: _cuerpo,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
@@ -67,16 +59,10 @@ class _navigationBarState extends State<navigationBar> {
           borderRadius: BorderRadius.circular(30),
           child: BottomNavigationBar(
             items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Inicio',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.dumbbell),
-                label: 'Rutinas',
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+              BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Rutinas'),
             ],
-            backgroundColor: Colors.black54, // Color de la barra
+            backgroundColor: Colors.black54,
             currentIndex: _screenAct,
             selectedItemColor: Colors.blue,
             unselectedItemColor: Colors.white70,
@@ -89,4 +75,3 @@ class _navigationBarState extends State<navigationBar> {
     );
   }
 }
-

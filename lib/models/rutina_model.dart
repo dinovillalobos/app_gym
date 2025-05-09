@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RutinaModel {
   final String id;
   final String nombre;
@@ -11,18 +13,46 @@ class RutinaModel {
     required this.ejercicios,
   });
 
-  Map<String, dynamic> toJson() => {
-    'nombre': nombre,
-    'descripcion': descripcion,
-    'ejercicios': ejercicios,
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'nombre': nombre,
+      'descripcion': descripcion,
+      'ejercicios': ejercicios.map((ej) {
+        return {
+          'nombre': ej['nombre'],
+          'musculo': ej['musculo'],
+          'tipo': ej['tipo'],
+          'series': (ej['series'] as List).map((s) => {
+            'tipo': s['tipo'],
+            'kg': s['kg'],
+            'reps': s['reps'],
+          }).toList(),
+        };
+      }).toList(),
+    };
+  }
 
   factory RutinaModel.fromJson(Map<String, dynamic> json, String id) {
     return RutinaModel(
       id: id,
       nombre: json['nombre'] ?? '',
       descripcion: json['descripcion'] ?? '',
-      ejercicios: List<Map<String, dynamic>>.from(json['ejercicios'] ?? []),
+      ejercicios: (json['ejercicios'] as List<dynamic>?)?.map((e) {
+        return {
+          'nombre': e['nombre'] ?? '',
+          'musculo': e['musculo'] ?? '',
+          'tipo': e['tipo'] ?? '',
+          'series': (e['series'] as List<dynamic>?)?.map((s) {
+            return {
+              'tipo': s['tipo'] ?? '',
+              'kg': s['kg'] ?? '',
+              'reps': s['reps'] ?? '',
+            };
+          }).toList() ??
+              [],
+        };
+      }).toList() ??
+          [],
     );
   }
 }

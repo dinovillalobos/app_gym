@@ -1,93 +1,129 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../models/rutina_model.dart';
+import '../services/rutina_service.dart';
 import 'agregar_ejercicio_screen.dart';
 
 class CrearRutinaScreen extends StatefulWidget {
-  final String userId;
-
-  const CrearRutinaScreen({Key? key, required this.userId, required String title}) : super(key: key);
+  const CrearRutinaScreen({Key? key}) : super(key: key);
 
   @override
   State<CrearRutinaScreen> createState() => _CrearRutinaScreenState();
 }
 
 class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController descripcionController = TextEditingController();
 
-  Future<void> _guardarYSeleccionarEjercicios() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final docRef = await FirebaseFirestore.instance
-            .collection('usuarios')
-            .doc(widget.userId)
-            .collection('rutinas')
-            .add({
-          'nombre': _nombreController.text,
-          'descripcion': _descripcionController.text,
-          'fecha_creacion': Timestamp.now(),
-        });
+  List<Map<String, dynamic>> ejercicios = [];
 
-        final seleccionados = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AgregarEjerciciosScreen(rutinaId: docRef.id),
-          ),
-        );
+  void _agregarEjercicios() async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AgregarEjerciciosScreen(rutinaId: ''),
+      ),
+    );
 
-        if (seleccionados != null && seleccionados is List<Map<String, dynamic>>) {
-          for (var ejercicio in seleccionados) {
-            await docRef.collection('ejercicios').add(ejercicio);
+    if (resultado != null && resultado is List<Map<String, dynamic>>) {
+      setState(() {
+        for (var e in resultado) {
+          if (!ejercicios.any((ex) => ex['nombre'] == e['nombre'])) {
+            ejercicios.add({...e, 'series': []});
           }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Rutina guardada con ejercicios')),
-          );
         }
-
-        Navigator.pop(context);
-      } catch (e) {
-        print('Error al guardar rutina: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al guardar la rutina')),
-        );
-      }
+      });
     }
+  }
+
+  void _guardarRutina() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuario no autenticado')),
+      );
+      return;
+    }
+
+    final nombre = nombreController.text.trim();
+    final descripcion = descripcionController.text.trim();
+
+    if (nombre.isEmpty || descripcion.isEmpty || ejercicios.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Completa todos los campos')),
+      );
+      return;
+    }
+
+    final rutina = RutinaModel(
+      id: '', // se asigna en Firestore
+      nombre: nombre,
+      descripcion: descripcion,
+      ejercicios: ejercicios,
+    );
+
+    final rutinaService = RutinaService(userId: user.uid);
+
+    try {
+      await rutinaService.crearRutina(rutina);
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar rutina: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    nombreController.dispose();
+    descripcionController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Crear nueva rutina')),
+      appBar: AppBar(
+        title: const Text('Crear Rutina'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _guardarRutina,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nombreController,
-                decoration: const InputDecoration(labelText: 'Nombre de la rutina'),
-                validator: (value) => value!.isEmpty ? 'Ingresa un nombre' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descripcionController,
-                decoration: const InputDecoration(labelText: 'Descripción'),
-                validator: (value) => value!.isEmpty ? 'Ingresa una descripción' : null,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _guardarYSeleccionarEjercicios,
-                icon: const Icon(Icons.fitness_center),
-                label: const Text('Guardar y agregar ejercicios'),
-              ),
-            ],
-          ),
+        child: ListView(
+          children: [
+            TextField(
+              controller: nombreController,
+              decoration: const InputDecoration(labelText: 'Nombre de la rutina'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: descripcionController,
+              decoration: const InputDecoration(labelText: 'Descripción'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar ejercicios'),
+              onPressed: _agregarEjercicios,
+            ),
+            const SizedBox(height: 20),
+            if (ejercicios.isNotEmpty) ...[
+              const Text('Ejercicios seleccionados:', style: TextStyle(fontWeight: FontWeight.bold)),
+              ...ejercicios.map((e) => ListTile(
+                title: Text(e['nombre']),
+                subtitle: Text('Músculo: ${e['musculo']} • Tipo: ${e['tipo']}'),
+              )),
+            ]
+          ],
         ),
       ),
     );
   }
 }
-
