@@ -78,10 +78,31 @@ class _HomeScreenState extends State<HomeScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : rutinas.isEmpty
-          ? const Center(
-        child: Text(
-          'No hay rutinas registradas.',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ? Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'No hay rutinas registradas.',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text('Crear rutina'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CrearRutinaScreen(),
+                  ),
+                ).then((_) => cargarDatosIniciales(userId));
+              },
+            ),
+          ],
         ),
       )
           : ListView.builder(
@@ -103,7 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 rutina.descripcion,
                 style: const TextStyle(color: Colors.white70),
               ),
-              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+              trailing:
+              const Icon(Icons.arrow_forward_ios, color: Colors.white),
               onTap: () async {
                 await Navigator.push(
                   context,
@@ -123,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => CrearRutinaScreen(),
+              builder: (_) => const CrearRutinaScreen(),
             ),
           ).then((_) => cargarDatosIniciales(userId));
         },
@@ -132,3 +154,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

@@ -15,6 +15,13 @@ class DetalleRutinaScreen extends StatefulWidget {
 class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
   List<Map<String, dynamic>> ejercicios = [];
 
+  @override
+  void initState() {
+    super.initState();
+    // Cargar los ejercicios guardados al abrir la pantalla
+    ejercicios = List<Map<String, dynamic>>.from(widget.rutina.ejercicios);
+  }
+
   void _agregarEjercicios() async {
     final resultado = await Navigator.push(
       context,
