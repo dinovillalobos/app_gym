@@ -41,45 +41,48 @@ class _navigationBarState extends State<navigationBar> {
     _cuerpo = HomeScreen(title: "Inicio");
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900], // Color de fondo general
       body: _cuerpo,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, 4),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Inicio',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.dumbbell),
+                label: 'Rutinas',
               ),
             ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: BottomNavigationBar(
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Inicio',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.dumbbell),
-                  label: 'Rutinas',
-                ),
-              ],
-              backgroundColor: Colors.black,
-              currentIndex: _screenAct,
-              selectedItemColor: Colors.blue,
-              unselectedItemColor: Colors.white,
-              onTap: _changeScreen,
-              type: BottomNavigationBarType.fixed,
-              elevation: 0,
-            ),
+            backgroundColor: Colors.black54, // Color de la barra
+            currentIndex: _screenAct,
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Colors.white70,
+            onTap: _changeScreen,
+            type: BottomNavigationBarType.fixed,
+            elevation: 0,
           ),
         ),
       ),

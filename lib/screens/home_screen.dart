@@ -53,11 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Bienvenido, $username'),
+        backgroundColor: Colors.black,
+        title: Text(
+          'Bienvenido, $username',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               Navigator.of(context).pushReplacementNamed('/login');
@@ -66,19 +74,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : rutinas.isEmpty
-          ? const Center(child: Text('No hay rutinas registradas.'))
+          ? const Center(
+        child: Text(
+          'No hay rutinas registradas.',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      )
           : ListView.builder(
         itemCount: rutinas.length,
         itemBuilder: (context, index) {
           final rutina = rutinas[index];
           return Card(
+            color: Colors.grey[900],
             margin: const EdgeInsets.all(8),
             child: ListTile(
-              title: Text(rutina.nombre),
-              subtitle: Text(rutina.descripcion),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              title: Text(
+                rutina.nombre,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                rutina.descripcion,
+                style: const TextStyle(color: Colors.white70),
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
               onTap: () async {
                 await Navigator.push(
                   context,
@@ -88,26 +111,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 );
-                // Refrescar después de volver de detalles
-                cargarDatosIniciales(
-                    FirebaseAuth.instance.currentUser!.uid);
+                cargarDatosIniciales(FirebaseAuth.instance.currentUser!.uid);
               },
             ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
         onPressed: () {
           final userId = FirebaseAuth.instance.currentUser!.uid;
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => CrearRutinaScreen(userId: userId, title: '',),
+              builder: (_) => CrearRutinaScreen(userId: userId, title: ''),
             ),
-          ).then((_) => cargarDatosIniciales(userId)); // Refrescar al volver
+          ).then((_) => cargarDatosIniciales(userId));
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 }
+
