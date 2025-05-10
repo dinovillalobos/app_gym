@@ -1,3 +1,4 @@
+import 'package:app_gym_hibrido/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:app_gym_hibrido/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,7 +100,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                           if (user != null) {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (_) => const HomeScreen()),
+                              MaterialPageRoute(builder: (_) => const navigationBar()),
                             );
                           }
                         } catch (e) {
