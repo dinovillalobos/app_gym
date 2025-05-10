@@ -55,12 +55,27 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
             ),
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              title: Text(
-                ejercicio['nombre'],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                  ejercicio['nombre'],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
+                    style: const TextStyle(color: Colors.grey,fontSize: 13),
+                  ),
+                  Text(
+                    'Secundarios: ${List<String>.from(ejercicio['musculosSecundarios']).join(', ')}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                ],
               ),
               subtitle: Text(
                 '${ejercicio['musculo']}',
@@ -78,8 +93,8 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
                   });
                 },
                 checkColor: Colors.black,
-                activeColor: Colors.white,
-                side: const BorderSide(color: Colors.white),
+                activeColor: Colors.green,
+                side: const BorderSide(color: Colors.green),
               ),
             ),
           );
