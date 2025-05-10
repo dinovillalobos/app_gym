@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/FondoLoginGym.jpg"), // Asegúrate de agregar tu imagen
+                image: AssetImage("assets/Fondo3.png"), // Asegúrate de agregar tu imagen
                 fit: BoxFit.cover,
               ),
             ),
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     Image.asset(
-                      'assets/logoGym.png', // Cambia por tu imagen de logo
+                      'assets/logo2.png', // Cambia por tu imagen de logo
                       height: 200,
                     ),
                     const SizedBox(height: 32),

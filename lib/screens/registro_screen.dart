@@ -38,7 +38,12 @@ class _RegistroScreenState extends State<RegistroScreen> {
       body: Stack(
         children: [
           // Fondo negro
-          Container(color: Colors.black),
+          Container(decoration: const BoxDecoration(
+            image: DecorationImage(
+                image:AssetImage("assets/Fondo2.png"),
+            fit: BoxFit.cover)
+          ),
+          ),
 
           // Contenido principal
           Center(
@@ -58,7 +63,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                   ),
                   const SizedBox(height: 16),
                   Image.asset(
-                    'assets/logoGym.png', // Asegúrate de tener esta imagen
+                    'assets/logo2.png', // Asegúrate de tener esta imagen
                     height: 180,
                   ),
                   const SizedBox(height: 32),
