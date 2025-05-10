@@ -24,6 +24,12 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
     return seleccionados.any((e) => e['nombre'] == ejercicio['nombre']);
   }
 
+  String _getImagePath(String nombreEjercicio) {
+    // Normaliza el nombre para hacer match con la imagen
+    String nombre = nombreEjercicio.toLowerCase().replaceAll(' ', '_');
+    return 'assets/ejercicios/$nombre.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,8 +58,14 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
         itemCount: ejerciciosMock.length,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         itemBuilder: (context, index) {
+          /*
+          Dentro de estas funciones vamos a obtener la lista de los ejercicios
+          Su seleccion y sobre todo empezar a notar si hay considencias con los
+          nombres de los ejercicios y mandar a llamar a las imagenes.
+           */
           final ejercicio = ejerciciosMock[index];
           final seleccionado = estaSeleccionado(ejercicio);
+          final imagen = _getImagePath(ejercicio['nombre']);
 
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
@@ -63,31 +75,48 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
             ),
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              title: Column(
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagen,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 60,
+                      height: 60,
+                      color: Colors.grey[800],
+                      /*
+                      Child para mostrar dentro de las tarjetas si no hay imagen para ese ejercicio
+                      y mostrar un icono de no encontrado/no soportado.
+                       */
+                      child: const Icon(Icons.image_not_supported, color: Colors.white),
+                    );
+                  },
+                ),
+              ),
+              title: Text(
+                ejercicio['nombre'],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                  ejercicio['nombre'],
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  ),
                   const SizedBox(height: 4),
                   Text(
                     'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
-                    style: const TextStyle(color: Colors.grey,fontSize: 13),
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
                   Text(
                     'Secundarios: ${List<String>.from(ejercicio['musculosSecundarios']).join(', ')}',
                     style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
                 ],
-              ),
-              subtitle: Text(
-                '${ejercicio['musculo']}',
-                style: const TextStyle(color: Colors.grey),
               ),
               trailing: Checkbox(
                 value: seleccionado,
@@ -120,6 +149,7 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
     );
   }
 }
+
 
 
 

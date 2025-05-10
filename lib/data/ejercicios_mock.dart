@@ -32,7 +32,7 @@ final List<Map<String, dynamic>> ejerciciosMock = [
     'musculosSecundarios': ['Tríceps', 'Trapecio'],
   },
   {
-    'nombre': 'Curl de bíceps',
+    'nombre': 'Curl de biceps',
     'musculo': 'Bíceps',
     'tipo': 'Hipertrofia',
     'musculosSecundarios': ['Antebrazo'],
@@ -92,7 +92,7 @@ final List<Map<String, dynamic>> ejerciciosMock = [
     'musculosSecundarios': [],
   },
   {
-    'nombre': 'Extensión de tríceps en polea',
+    'nombre': 'Extension de triceps en polea',
     'musculo': 'Tríceps',
     'tipo': 'Hipertrofia',
     'musculosSecundarios': [],
