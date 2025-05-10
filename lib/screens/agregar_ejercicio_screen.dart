@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/ejercicios_mock.dart';
 
 class AgregarEjerciciosScreen extends StatefulWidget {
-  final String rutinaId; // ✅ Nuevo parámetro obligatorio
+  final String rutinaId;
 
   const AgregarEjerciciosScreen({
     Key? key,
@@ -27,52 +27,76 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Selecciona ejercicios'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Text('Rutina ID: ${widget.rutinaId}', style: const TextStyle(fontSize: 12)),
-            ),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: const Text(
+          'Selecciona Ejercicios',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
-        ],
+        ),
       ),
       body: ListView.builder(
         itemCount: ejerciciosMock.length,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         itemBuilder: (context, index) {
           final ejercicio = ejerciciosMock[index];
           final seleccionado = estaSeleccionado(ejercicio);
 
-          return ListTile(
-            title: Text(ejercicio['nombre']),
-            subtitle: Text(
-              'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}'
-                  '\nSecundarios: ${List<String>.from(ejercicio['musculosSecundarios']).join(', ')}',
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(16),
             ),
-            trailing: Checkbox(
-              value: seleccionado,
-              onChanged: (valor) {
-                setState(() {
-                  if (valor == true && !seleccionado) {
-                    seleccionados.add(ejercicio);
-                  } else {
-                    seleccionados.removeWhere((e) => e['nombre'] == ejercicio['nombre']);
-                  }
-                });
-              },
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              title: Text(
+                ejercicio['nombre'],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                '${ejercicio['musculo']}',
+                style: const TextStyle(color: Colors.grey),
+              ),
+              trailing: Checkbox(
+                value: seleccionado,
+                onChanged: (valor) {
+                  setState(() {
+                    if (valor == true && !seleccionado) {
+                      seleccionados.add(ejercicio);
+                    } else {
+                      seleccionados.removeWhere((e) => e['nombre'] == ejercicio['nombre']);
+                    }
+                  });
+                },
+                checkColor: Colors.black,
+                activeColor: Colors.white,
+                side: const BorderSide(color: Colors.white),
+              ),
             ),
-            isThreeLine: true,
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.blueAccent,
         onPressed: _guardarSeleccion,
-        icon: const Icon(Icons.save),
-        label: const Text('Guardar'),
+        icon: const Icon(Icons.save, color: Colors.white),
+        label: const Text(
+          'Guardar',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 }
+
 
 

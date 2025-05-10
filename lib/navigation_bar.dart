@@ -90,7 +90,7 @@ class _navigationBarState extends State<navigationBar> {
                   label: '',
                 ),
               ],
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.grey,
               currentIndex: _screenAct,
               selectedItemColor: Colors.white,
               unselectedItemColor: Colors.white,

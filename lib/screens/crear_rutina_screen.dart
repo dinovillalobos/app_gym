@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/rutina_model.dart';
 import '../services/rutina_service.dart';
 import 'agregar_ejercicio_screen.dart';
-import 'home_screen.dart';
 import 'rutina_detail_screen.dart';
 
 class CrearRutinaScreen extends StatefulWidget {
@@ -59,8 +58,8 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
     }
 
     final rutina = RutinaModel(
-      id: '', // se asigna en Firestore
-      idUsuario: user.uid, // ✅ Agrega esta línea
+      id: '',
+      idUsuario: user.uid,
       nombre: nombre,
       descripcion: descripcion,
       ejercicios: ejercicios,
@@ -94,8 +93,26 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Crear Rutina'),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: const Text(
+          'Lista de rutinas',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.blue,
+            height: 3.0,
+            margin: const EdgeInsets.only(left: 16, right: 16),
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -109,25 +126,59 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
           children: [
             TextField(
               controller: nombreController,
-              decoration: const InputDecoration(labelText: 'Nombre de la rutina'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Nombre de la rutina',
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white24),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: descripcionController,
-              decoration: const InputDecoration(labelText: 'Descripción'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Descripción',
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white24),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Agregar ejercicios'),
               onPressed: _agregarEjercicios,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1E1E1E),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             if (ejercicios.isNotEmpty) ...[
-              const Text('Ejercicios seleccionados:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Ejercicios seleccionados:',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
               ...ejercicios.map((e) => ListTile(
-                title: Text(e['nombre']),
-                subtitle: Text('Músculo: ${e['musculo']} • Tipo: ${e['tipo']}'),
+                title: Text(e['nombre'], style: const TextStyle(color: Colors.white)),
+                subtitle: Text(
+                  'Músculo: ${e['musculo']} • Tipo: ${e['tipo']}',
+                  style: const TextStyle(color: Colors.white54),
+                ),
               )),
             ]
           ],
@@ -136,3 +187,4 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
     );
   }
 }
+

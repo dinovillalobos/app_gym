@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: () {
           Navigator.push(
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ).then((_) => cargarDatosIniciales(userId));
         },
         child: const Icon(Icons.add),
-      ),
+      ),*/
     );
   }
 }
