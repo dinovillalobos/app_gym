@@ -65,6 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.green[900],
+            height: 3.0,
+            margin: const EdgeInsets.only(left: 16, right: 16),
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),

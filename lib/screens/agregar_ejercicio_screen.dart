@@ -39,6 +39,14 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
             fontSize: 20,
           ),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.pink[800],
+            height: 3.0,
+            margin: const EdgeInsets.only(left: 16, right: 16),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: ejerciciosMock.length,
