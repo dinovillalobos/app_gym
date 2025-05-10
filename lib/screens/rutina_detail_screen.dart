@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/rutina_model.dart';
+import '../services/rutina_service.dart';
 import '../widgets/modal_agregar_serie.dart';
 import 'agregar_ejercicio_screen.dart';
 
@@ -13,20 +14,34 @@ class DetalleRutinaScreen extends StatefulWidget {
 }
 
 class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
-  List<Map<String, dynamic>> ejercicios = [];
+  late List<Map<String, dynamic>> ejercicios;
+  late RutinaService rutinaService;
 
   @override
   void initState() {
     super.initState();
-    // Cargar los ejercicios guardados al abrir la pantalla
     ejercicios = List<Map<String, dynamic>>.from(widget.rutina.ejercicios);
+    rutinaService = RutinaService(userId: widget.rutina.idUsuario);
+
+    debugPrint('🔍 Rutina ID recibido: ${widget.rutina.id}');
+  }
+
+  Future<void> _guardarCambios() async {
+    final rutinaActualizada = widget.rutina.copyWith(ejercicios: ejercicios);
+    await rutinaService.actualizarRutina(rutinaActualizada);
+  }
+
+  @override
+  void dispose() {
+    _guardarCambios(); // guarda al salir
+    super.dispose();
   }
 
   void _agregarEjercicios() async {
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const AgregarEjerciciosScreen(rutinaId: ''),
+        builder: (_) => AgregarEjerciciosScreen(rutinaId: widget.rutina.id),
       ),
     );
 
@@ -62,10 +77,9 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
       context: context,
       isScrollControlled: true,
       builder: (_) => ModalAgregarSerie(
-        tipoInicial: (serie.containsKey('tipo') && serie['tipo'] != null) ? serie['tipo'] : '',
-        kgInicial: (serie.containsKey('kg') && serie['kg'] != null) ? serie['kg'].toString() : '',
-        repsInicial: (serie.containsKey('reps') && serie['reps'] != null) ? serie['reps'].toString() : '',
-
+        tipoInicial: serie['tipo'] ?? '',
+        kgInicial: serie['kg']?.toString() ?? '',
+        repsInicial: serie['reps']?.toString() ?? '',
       ),
     );
 
@@ -89,9 +103,17 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
         title: Text(widget.rutina.nombre),
         actions: [
           IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: 'Guardar',
+            onPressed: () async {
+              await _guardarCambios();
+              if (mounted) Navigator.pop(context);
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
-            onPressed: _agregarEjercicios,
             tooltip: 'Agregar ejercicios',
+            onPressed: _agregarEjercicios,
           ),
         ],
       ),
@@ -139,7 +161,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
@@ -158,4 +180,3 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
     );
   }
 }
-

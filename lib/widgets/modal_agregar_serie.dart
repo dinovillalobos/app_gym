@@ -34,23 +34,27 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
   @override
   void initState() {
     super.initState();
-    tipo = widget.tipoInicial;
+    tipo = widget.tipoInicial.isNotEmpty ? widget.tipoInicial : null;
     kgController.text = widget.kgInicial;
     repsController.text = widget.repsInicial;
   }
 
   void _guardarSerie() {
-    if (tipo != null && kgController.text.isNotEmpty && repsController.text.isNotEmpty) {
-      Navigator.pop(context, {
-        'tipo': tipo,
-        'kg': double.tryParse(kgController.text) ?? 0,
-        'reps': int.tryParse(repsController.text) ?? 0,
-      });
-    } else {
+    final kg = double.tryParse(kgController.text);
+    final reps = int.tryParse(repsController.text);
+
+    if (tipo == null || kg == null || reps == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Completa todos los campos')),
+        const SnackBar(content: Text('Completa todos los campos con valores válidos')),
       );
+      return;
     }
+
+    Navigator.pop(context, {
+      'tipo': tipo,
+      'kg': kg,
+      'reps': reps,
+    });
   }
 
   @override
@@ -62,41 +66,44 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
         top: 24,
         bottom: MediaQuery.of(context).viewInsets.bottom + 16,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Selecciona tipo de serie',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          ...tiposDeSerie.map((t) {
-            return ListTile(
-              title: Text('${t['valor']} - ${t['descripcion']}'),
-              leading: Radio<String>(
-                value: t['valor']!,
-                groupValue: tipo,
-                onChanged: (value) => setState(() => tipo = value),
-              ),
-            );
-          }).toList(),
-          TextField(
-            controller: kgController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Peso (kg)'),
-          ),
-          TextField(
-            controller: repsController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Repeticiones'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _guardarSerie,
-            icon: const Icon(Icons.check),
-            label: const Text('Guardar serie'),
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Selecciona tipo de serie',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            ...tiposDeSerie.map((t) {
+              return ListTile(
+                dense: true,
+                title: Text('${t['valor']} - ${t['descripcion']}'),
+                leading: Radio<String>(
+                  value: t['valor']!,
+                  groupValue: tipo,
+                  onChanged: (value) => setState(() => tipo = value),
+                ),
+              );
+            }),
+            TextField(
+              controller: kgController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(labelText: 'Peso (kg)'),
+            ),
+            TextField(
+              controller: repsController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Repeticiones'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _guardarSerie,
+              icon: const Icon(Icons.check),
+              label: const Text('Guardar serie'),
+            ),
+          ],
+        ),
       ),
     );
   }

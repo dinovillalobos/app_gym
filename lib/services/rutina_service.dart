@@ -10,20 +10,26 @@ class RutinaService {
   CollectionReference get _rutinasRef =>
       _db.collection('usuarios').doc(userId).collection('rutinas');
 
-  Future<void> crearRutina(RutinaModel rutina) async {
+  Future<RutinaModel> crearRutina(RutinaModel rutina) async {
     try {
       print('Guardando rutina para UID: $userId');
       print('Datos de rutina antes de guardar: ${rutina.toJson()}');
 
       // Generar nuevo ID
-      final newDocRef = _rutinasRef.doc(); // genera un ID automáticamente
-      final rutinaConId = rutina.copyWith(id: newDocRef.id);
+      final newDocRef = _rutinasRef.doc();
 
-      // Guardar rutina con ID asignado
+      // Crear rutina con ID y asegurar que tenga el idUsuario correcto
+      final rutinaConId = rutina.copyWith(
+        id: newDocRef.id,
+        idUsuario: userId,
+      );
+
+      // Guardar rutina
       await newDocRef.set(rutinaConId.toJson());
 
       print('✅ Rutina guardada exitosamente con ID: ${newDocRef.id}');
 
+      return rutinaConId; // ✅ retornamos la rutina con ID asignado
     } catch (e) {
       print('❌ Error al guardar rutina: $e');
       throw Exception('Error al guardar rutina: $e');
@@ -51,6 +57,10 @@ class RutinaService {
 
   Future<void> actualizarRutina(RutinaModel rutina) async {
     try {
+      if (rutina.id.isEmpty) {
+        throw Exception('El ID de la rutina está vacío');
+      }
+
       await _rutinasRef.doc(rutina.id).update(rutina.toJson());
     } catch (e) {
       throw Exception('Error al actualizar rutina: $e');

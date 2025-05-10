@@ -4,6 +4,8 @@ import '../models/rutina_model.dart';
 import '../services/rutina_service.dart';
 import 'agregar_ejercicio_screen.dart';
 import 'home_screen.dart';
+import 'rutina_detail_screen.dart';
+
 class CrearRutinaScreen extends StatefulWidget {
   const CrearRutinaScreen({Key? key}) : super(key: key);
 
@@ -58,6 +60,7 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
 
     final rutina = RutinaModel(
       id: '', // se asigna en Firestore
+      idUsuario: user.uid, // ✅ Agrega esta línea
       nombre: nombre,
       descripcion: descripcion,
       ejercicios: ejercicios,
@@ -66,12 +69,13 @@ class _CrearRutinaScreenState extends State<CrearRutinaScreen> {
     final rutinaService = RutinaService(userId: user.uid);
 
     try {
-      await rutinaService.crearRutina(rutina);
+      final nuevaRutina = await rutinaService.crearRutina(rutina);
 
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (Route<dynamic> route) => false,
+        MaterialPageRoute(
+          builder: (_) => DetalleRutinaScreen(rutina: nuevaRutina),
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
