@@ -22,19 +22,21 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
     super.initState();
     ejercicios = List<Map<String, dynamic>>.from(widget.rutina.ejercicios);
     rutinaService = RutinaService(userId: widget.rutina.idUsuario);
-
-    debugPrint('🔍 Rutina ID recibido: ${widget.rutina.id}');
   }
 
   Future<void> _guardarCambios() async {
     final rutinaActualizada = widget.rutina.copyWith(ejercicios: ejercicios);
-    await rutinaService.actualizarRutina(rutinaActualizada);
-  }
 
-  @override
-  void dispose() {
-    _guardarCambios(); // guarda al salir
-    super.dispose();
+    try {
+      await rutinaService.actualizarRutina(rutinaActualizada);
+      if (mounted) Navigator.pop(context); // cerrar solo si la pantalla sigue activa
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar rutina: $e')),
+        );
+      }
+    }
   }
 
   void _agregarEjercicios() async {
@@ -65,6 +67,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
 
     if (nuevaSerie != null) {
       setState(() {
+        ejercicios[indexEjercicio]['series'] ??= [];
         ejercicios[indexEjercicio]['series'].add(nuevaSerie);
       });
     }
@@ -105,10 +108,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Guardar',
-            onPressed: () async {
-              await _guardarCambios();
-              if (mounted) Navigator.pop(context);
-            },
+            onPressed: _guardarCambios,
           ),
           IconButton(
             icon: const Icon(Icons.add),
@@ -123,6 +123,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
         itemCount: ejercicios.length,
         itemBuilder: (context, indexEjercicio) {
           final ejercicio = ejercicios[indexEjercicio];
+          final series = List<Map<String, dynamic>>.from(ejercicio['series'] ?? []);
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -140,7 +141,7 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
-                  ...ejercicio['series'].asMap().entries.map((entry) {
+                  ...series.asMap().entries.map((entry) {
                     final serie = entry.value;
                     final indexSerie = entry.key;
 
@@ -180,3 +181,4 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
     );
   }
 }
+
