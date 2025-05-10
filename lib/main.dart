@@ -1,3 +1,4 @@
+import 'package:app_gym_hibrido/navigation_bar.dart';
 import 'package:app_gym_hibrido/screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()),
              );
             } else if (snapshot.hasData) {
-              return const HomeScreen();
+              return const navigationBar(userId: '');
             } else {
               return const LoginScreen();
           }

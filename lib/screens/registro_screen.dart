@@ -100,7 +100,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                           if (user != null) {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (_) => const navigationBar()),
+                              MaterialPageRoute(builder: (_) => const navigationBar(userId: '',)),
                             );
                           }
                         } catch (e) {

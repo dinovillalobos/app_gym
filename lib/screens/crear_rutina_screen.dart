@@ -7,7 +7,7 @@ import 'home_screen.dart';
 import 'rutina_detail_screen.dart';
 
 class CrearRutinaScreen extends StatefulWidget {
-  const CrearRutinaScreen({Key? key}) : super(key: key);
+  const CrearRutinaScreen({Key? key, required String title, required String userId}) : super(key: key);
 
   @override
   State<CrearRutinaScreen> createState() => _CrearRutinaScreenState();

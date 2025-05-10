@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const navigationBar()),
+        MaterialPageRoute(builder: (_) => const navigationBar(userId: '',)),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
