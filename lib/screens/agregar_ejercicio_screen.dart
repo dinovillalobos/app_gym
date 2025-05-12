@@ -149,7 +149,7 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.green[900],
         onPressed: _guardarSeleccion,
         icon: const Icon(Icons.save, color: Colors.white),
         label: const Text(
