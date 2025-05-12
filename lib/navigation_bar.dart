@@ -11,14 +11,25 @@ class navigationBar extends StatefulWidget {
   State<navigationBar> createState() => _navigationBarState();
 }
 
+/*
+Indicamos que nuestra pantalla sera la 0, cada que se incie la app o en este caso el login
+nos mostrara la pantalla 0, la HOME.
+ */
 class _navigationBarState extends State<navigationBar> {
   int _screenAct = 0;
   late Widget _cuerpo;
 
+  /*
+  Funcion que nos va indicar un tipo de iteracion o en este caso un bucle, donde tomaremos i como
+  un indicador y este tomara el valor de la pantalla que seleccionemos.
+   */
   void _changeScreen(int i) {
     setState(() {
       _screenAct = i;
 
+      /*
+      Funcion Switch para indicar como se pondran las pantallas siendo estas 2
+       */
       switch (_screenAct) {
         case 0:
           _cuerpo = HomeScreen(title: "Inicio");
@@ -44,7 +55,7 @@ class _navigationBarState extends State<navigationBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true, // <-- Esto permite que el cuerpo se extienda detrás de la nav bar
+      extendBody: true,
       backgroundColor: Colors.transparent,
       body: _cuerpo,
       bottomNavigationBar: Padding(

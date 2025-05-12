@@ -33,6 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
+
+      /*
+      Funcion en donde despues de un Login exitoso, nos redirigira a la Barra en navegacion
+      en donde esta contiene las dos pantallas principales de la aplicacion.
+       */
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const navigationBar(userId: '',)),
@@ -71,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/Fondo3.png"), // Asegúrate de agregar tu imagen
+                image: AssetImage("assets/Fondo3.png"), // Fondo del Login
                 fit: BoxFit.cover,
               ),
             ),
