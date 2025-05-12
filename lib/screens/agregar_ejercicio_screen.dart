@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/ejercicios_mock.dart';
+import '../data/ejercicios_pliometrico.dart';
 
 class AgregarEjerciciosScreen extends StatefulWidget {
   final String rutinaId;
@@ -15,6 +16,16 @@ class AgregarEjerciciosScreen extends StatefulWidget {
 
 class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
   final List<Map<String, dynamic>> seleccionados = [];
+
+  /*
+  Aqui estamos haciendo una lista en donde vamos a guardar las listas que contiene los
+  archivos con los ejercicios, solo hacemos una ya que esta la referenciaremos para que
+  sea una sola, dentro de este mismo va a estar y solo es cuetión de importar los archivos.
+   */
+  final List<Map<String, dynamic>> ejerciciosTotales = [
+    ...ejerciciosMock,
+    ...ejerciciosPliometricos,
+  ];
 
   void _guardarSeleccion() {
     Navigator.pop(context, seleccionados);
@@ -55,7 +66,7 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
         ),
       ),
       body: ListView.builder(
-        itemCount: ejerciciosMock.length,
+        itemCount: ejerciciosTotales.length,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         itemBuilder: (context, index) {
           /*
@@ -63,7 +74,7 @@ class _AgregarEjerciciosScreenState extends State<AgregarEjerciciosScreen> {
           Su seleccion y sobre todo empezar a notar si hay considencias con los
           nombres de los ejercicios y mandar a llamar a las imagenes.
            */
-          final ejercicio = ejerciciosMock[index];
+          final ejercicio = ejerciciosTotales[index];
           final seleccionado = estaSeleccionado(ejercicio);
           final imagen = _getImagePath(ejercicio['nombre']);
 

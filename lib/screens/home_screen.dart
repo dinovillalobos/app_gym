@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             color: Colors.green[900],
             height: 3.0,
-            margin: const EdgeInsets.only(left: 16, right: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
           ),
         ),
         actions: [
@@ -105,7 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const CrearRutinaScreen(title: '', userId: '',),
+                    builder: (_) => const CrearRutinaScreen(
+                      title: '',
+                      userId: '',
+                    ),
                   ),
                 ).then((_) => cargarDatosIniciales(userId));
               },
@@ -113,53 +116,81 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       )
-          : ListView.builder(
-        itemCount: rutinas.length,
-        itemBuilder: (context, index) {
-          final rutina = rutinas[index];
-          return Card(
-            color: Colors.grey[900],
-            margin: const EdgeInsets.all(8),
-            child: ListTile(
-              title: Text(
-                rutina.nombre,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+          : Padding(
+        // Posicio para poder centrar y bajar más los containers con las rutinas
+        padding: const EdgeInsets.only(top: 100),
+        child: ListView.builder(
+          itemCount: rutinas.length,
+          itemBuilder: (context, index) {
+            final rutina = rutinas[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints:
+                  const BoxConstraints(maxWidth: 360),
+                  child: InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              DetalleRutinaScreen(rutina: rutina),
+                        ),
+                      );
+                      cargarDatosIniciales(userId);
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2A2A2A),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  rutina.nombre,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  rutina.descripcion,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white54,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              subtitle: Text(
-                rutina.descripcion,
-                style: const TextStyle(color: Colors.white70),
-              ),
-              trailing:
-              const Icon(Icons.arrow_forward_ios, color: Colors.white),
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DetalleRutinaScreen(rutina: rutina),
-                  ),
-                );
-                cargarDatosIniciales(userId);
-              },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
-      /*floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const CrearRutinaScreen(title: '', userId: '',),
-            ),
-          ).then((_) => cargarDatosIniciales(userId));
-        },
-        child: const Icon(Icons.add),
-      ),*/
     );
   }
 }
+
+
 

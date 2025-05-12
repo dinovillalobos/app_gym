@@ -24,9 +24,9 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
   final List<Map<String, String>> tiposDeSerie = [
     {'valor': 'W', 'descripcion': 'Calentamiento (Warm-up)'},
     {'valor': '1', 'descripcion': 'Serie 1'},
-    {'valor': '2', 'descripcion': 'Serie 2'},
+    /*{'valor': '2', 'descripcion': 'Serie 2'},
     {'valor': '3', 'descripcion': 'Serie 3'},
-    {'valor': '4', 'descripcion': 'Serie 4'},
+    {'valor': '4', 'descripcion': 'Serie 4'},*/
     {'valor': 'D', 'descripcion': 'Drop set'},
     {'valor': 'F', 'descripcion': 'Serie fallida'},
   ];
@@ -50,16 +50,28 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
       return;
     }
 
-    Navigator.pop(context, {
-      'tipo': tipo,
-      'kg': kg,
-      'reps': reps,
-    });
+    Navigator.pop(context, {'tipo': tipo!, 'kg': kg, 'reps': reps});
+  }
+
+  Color _getTipoColor(String tipo) {
+    switch (tipo) {
+      case 'W':
+        return Colors.amber;
+      case 'F':
+        return Colors.redAccent;
+      case 'D':
+        return Colors.blue;
+      case '1':
+        return Colors.lightGreenAccent;
+      default:
+        return Colors.white;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: Colors.grey[900],
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
@@ -72,35 +84,55 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
           children: [
             const Text(
               'Selecciona tipo de serie',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
             ),
             const SizedBox(height: 12),
             ...tiposDeSerie.map((t) {
+              final color = _getTipoColor(t['valor']!);
               return ListTile(
                 dense: true,
-                title: Text('${t['valor']} - ${t['descripcion']}'),
+                title: Text(
+                  '${t['valor']} - ${t['descripcion']}',
+                  style: TextStyle(color: color),
+                ),
                 leading: Radio<String>(
                   value: t['valor']!,
                   groupValue: tipo,
                   onChanged: (value) => setState(() => tipo = value),
+                  activeColor: color,
                 ),
               );
             }),
             TextField(
               controller: kgController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Peso (kg)'),
+              decoration: const InputDecoration(
+                labelText: 'Peso (kg)',
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+              ),
+              style: const TextStyle(color: Colors.white),
             ),
             TextField(
               controller: repsController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Repeticiones'),
+              decoration: const InputDecoration(
+                labelText: 'Repeticiones',
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+              ),
+              style: const TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _guardarSerie,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
               icon: const Icon(Icons.check),
-              label: const Text('Guardar serie'),
+              label: const Text('Guardar serie',
+              style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -108,3 +140,5 @@ class _ModalAgregarSerieState extends State<ModalAgregarSerie> {
     );
   }
 }
+
+

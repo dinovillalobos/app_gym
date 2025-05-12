@@ -102,31 +102,56 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(widget.rutina.nombre),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: Text(widget.rutina.nombre, style: const TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.save_as, color: Colors.white),
             tooltip: 'Guardar',
             onPressed: _guardarCambios,
           ),
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, color: Colors.white),
             tooltip: 'Agregar ejercicios',
             onPressed: _agregarEjercicios,
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.blueAccent,
+            height: 3.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+          ),
+        ),
       ),
       body: ejercicios.isEmpty
-          ? const Center(child: Text('No hay ejercicios aún.'))
+          ? const Center(
+        child: Text('No hay ejercicios aún.', style: TextStyle(color: Colors.white)),
+      )
           : ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         itemCount: ejercicios.length,
         itemBuilder: (context, indexEjercicio) {
           final ejercicio = ejercicios[indexEjercicio];
           final series = List<Map<String, dynamic>>.from(ejercicio['series'] ?? []);
 
-          return Card(
-            margin: const EdgeInsets.all(8),
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                )
+              ],
+            ),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -134,39 +159,99 @@ class _DetalleRutinaScreenState extends State<DetalleRutinaScreen> {
                 children: [
                   Text(
                     ejercicio['nombre'],
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
                     'Principal: ${ejercicio['musculo']} • Tipo: ${ejercicio['tipo']}',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
                   ),
-                  const SizedBox(height: 8),
+                  if (series.isNotEmpty) const SizedBox(height: 10),
                   ...series.asMap().entries.map((entry) {
                     final serie = entry.value;
                     final indexSerie = entry.key;
 
-                    return ListTile(
-                      title: Text('${serie['kg']} kg x ${serie['reps']} reps'),
-                      subtitle: Text('Tipo: ${serie['tipo']}'),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (opcion) {
-                          if (opcion == 'editar') {
-                            _editarSerie(indexEjercicio, indexSerie);
-                          } else if (opcion == 'eliminar') {
-                            _eliminarSerie(indexEjercicio, indexSerie);
-                          }
-                        },
-                        itemBuilder: (context) => const [
-                          PopupMenuItem(value: 'editar', child: Text('Editar serie')),
-                          PopupMenuItem(value: 'eliminar', child: Text('Eliminar serie')),
+                    Color color;
+                    switch (serie['tipo']) {
+                      case 'W':
+                        color = Colors.amber;
+                        break;
+                      case 'F':
+                        color = Colors.redAccent;
+                        break;
+                      case 'D':
+                        color = Colors.blue;
+                        break;
+                      case '1':
+                        color = Colors.greenAccent;
+                        break;
+                      default:
+                        color = Colors.white;
+                    }
+
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2A2A2A),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${serie['kg']} kg x ${serie['reps']} reps',
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                serie['tipo'],
+                                style: TextStyle(
+                                  color: color.withOpacity(0.9),
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              PopupMenuButton<String>(
+                                color: const Color(0xFF2A2A2A),
+                                icon: const Icon(Icons.more_vert, color: Colors.white70, size: 20),
+                                onSelected: (opcion) {
+                                  if (opcion == 'editar') {
+                                    _editarSerie(indexEjercicio, indexSerie);
+                                  } else if (opcion == 'eliminar') {
+                                    _eliminarSerie(indexEjercicio, indexSerie);
+                                  }
+                                },
+                                itemBuilder: (context) => const [
+                                  PopupMenuItem(value: 'editar', child: Text('Editar serie',
+                                  style: TextStyle(color: Colors.white),)),
+                                  PopupMenuItem(value: 'eliminar', child: Text('Eliminar serie',
+                                  style: TextStyle(color: Colors.white),)),
+                                ],
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     );
-                  }),
+                  }).toList(),
+
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.blueAccent,
+                      ),
                       onPressed: () => _agregarSerie(indexEjercicio),
                       icon: const Icon(Icons.add),
                       label: const Text('Agregar serie'),
