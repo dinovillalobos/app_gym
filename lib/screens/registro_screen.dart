@@ -1,8 +1,6 @@
 import 'package:app_gym_hibrido/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:app_gym_hibrido/services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'home_screen.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});

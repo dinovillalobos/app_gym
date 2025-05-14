@@ -1,9 +1,8 @@
 import 'package:app_gym_hibrido/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'home_screen.dart';
 import 'registro_screen.dart';
-import 'package:app_gym_hibrido/navigation_bar.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
